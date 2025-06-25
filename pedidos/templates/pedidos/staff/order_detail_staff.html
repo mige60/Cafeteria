@@ -1,0 +1,143 @@
+{% extends "base.html" %} {# O una base específica para el staff #}
+{% load i18n %}
+{% load tz %}
+{% load crispy_forms_tags %} {# Si usas crispy forms #}
+
+{% block title %}{{ titulo_pagina }} - {% trans "Gestión Cafetería" %}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>{{ titulo_pagina }}</h1>
+        <a href="{% url 'pedidos:order_list_staff' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> {% trans "Volver al Listado de Pedidos" %}
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-7">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">{% trans "Detalles del Pedido" %}</h4>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">{% trans "ID Pedido" %}:</dt>
+                        <dd class="col-sm-8">#{{ pedido.id }}</dd>
+
+                        <dt class="col-sm-4">{% trans "Cliente" %}:</dt>
+                        <dd class="col-sm-8">{{ pedido.nombre_cliente }}</dd>
+
+                        <dt class="col-sm-4">{% trans "Email" %}:</dt>
+                        <dd class="col-sm-8">{{ pedido.email_cliente|default:"No proporcionado" }}</dd>
+
+                        <dt class="col-sm-4">{% trans "Teléfono" %}:</dt>
+                        <dd class="col-sm-8">{{ pedido.telefono_cliente }}</dd>
+
+                        <dt class="col-sm-4">{% trans "Fecha Creación" %}:</dt>
+                        <dd class="col-sm-8">{{ pedido.fecha_creacion|timezone:settings.TIME_ZONE|date:"d M Y, H:i:s" }}</dd>
+
+                        <dt class="col-sm-4">{% trans "Última Actualización" %}:</dt>
+                        <dd class="col-sm-8">{{ pedido.fecha_actualizacion|timezone:settings.TIME_ZONE|date:"d M Y, H:i:s" }}</dd>
+
+                        <dt class="col-sm-4">{% trans "Total del Pedido" %}:</dt>
+                        <dd class="col-sm-8"><strong>${{ pedido.get_total_cost|floatformat:2 }}</strong></dd>
+                    </dl>
+
+                    {% if pedido.notas_adicionales_cliente %}
+                        <h5>{% trans "Notas del Cliente:" %}</h5>
+                        <p class="bg-light p-2 rounded">{{ pedido.notas_adicionales_cliente|linebreaksbr }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-warning text-dark">
+                     <h4 class="mb-0">{% trans "Ítems del Pedido" %}</h4>
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% for item in pedido.items.all %}
+                        <li class="list-group-item">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    {% if item.producto.imagen %}
+                                        <img src="{{ item.producto.imagen.url }}" alt="{{ item.producto.nombre }}" class="img-fluid rounded" style="max-height: 60px;">
+                                    {% else %}
+                                        <span class="text-muted small">{% trans "Sin img." %}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-5">
+                                    <strong>{{ item.producto.nombre }}</strong>
+                                    <small class="d-block text-muted">{{ item.producto.categoria.nombre|default:"" }}</small>
+                                </div>
+                                <div class="col-md-2 text-right">
+                                    {{ item.cantidad }} x ${{ item.precio_unitario|floatformat:2 }}
+                                </div>
+                                <div class="col-md-3 text-right">
+                                    <strong>${{ item.get_cost|floatformat:2 }}</strong>
+                                </div>
+                            </div>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item">{% trans "Este pedido no tiene ítems (esto podría ser un error)." %}</li>
+                    {% endfor %}
+                     <li class="list-group-item list-group-item-dark d-flex justify-content-between">
+                        <strong>{% trans "TOTAL" %}</strong>
+                        <strong>${{ pedido.get_total_cost|floatformat:2 }}</strong>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">{% trans "Gestionar Pedido" %}</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {# {{ form_estado|crispy }} #}
+                        {% for field in form_estado %}
+                            <div class="form-group mb-3">
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.help_text %}
+                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                {% endif %}
+                                {% for error in field.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <i class="fas fa-save"></i> {% trans "Actualizar Estado/Pago" %}
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">{% trans "Historial de Estado (Próximamente)" %}</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">{% trans "Aquí se podría mostrar un log de cambios de estado del pedido." %}</p>
+                    {# Ejemplo:
+                    <ul class="list-unstyled">
+                        <li><small>10/07/2024 10:05 - Estado cambiado a "En Proceso" por Admin</small></li>
+                        <li><small>10/07/2024 09:30 - Pedido Creado (Pendiente)</small></li>
+                    </ul>
+                    #}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "menu/menu_base.html" %}
+{% load i18n %}
+
+{% block page_title %}{% trans "Listado de Categorías" %}{% endblock %}
+{% block section_title %}{% trans "Categorías de Productos" %}{% endblock %}
+
+{% block menu_content %}
+<div class="mb-3">
+    <a href="{% url 'menu:categoria_create' %}" class="btn btn-primary">{% trans "Crear Nueva Categoría" %}</a>
+</div>
+
+{% if categorias %}
+    <div class="list-group">
+        {% for categoria in categorias %}
+            <div class="list-group-item list-group-item-action flex-column align-items-start">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1"><a href="{% url 'menu:categoria_detail' pk=categoria.pk slug=categoria.slug %}">{{ categoria.nombre }}</a></h5>
+                    <small>{{ categoria.productos.count }} {% trans "producto(s)" %}</small>
+                </div>
+                <p class="mb-1">{% trans "Slug" %}: {{ categoria.slug }}</p>
+                <div>
+                    <a href="{% url 'menu:categoria_update' pk=categoria.pk %}" class="btn btn-sm btn-info">{% trans "Editar" %}</a>
+                    <a href="{% url 'menu:categoria_delete' pk=categoria.pk %}" class="btn btn-sm btn-danger">{% trans "Eliminar" %}</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+        <nav aria-label="Page navigation" class="mt-3">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">{% trans "Anterior" %}</a></li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">{% trans "Anterior" %}</span></li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active"><span class="page-link">{{ num }} <span class="sr-only">(current)</span></span></li>
+                    {% else %}
+                        <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">{% trans "Siguiente" %}</a></li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">{% trans "Siguiente" %}</span></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+
+{% else %}
+    <p>{% trans "No hay categorías registradas todavía. Comienza por" %} <a href="{% url 'menu:categoria_create' %}">{% trans "crear una nueva" %}</a>.</p>
+{% endif %}
+{% endblock %}
