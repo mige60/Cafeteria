@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ titulo_pagina }} - {% trans "Cafetería Delicia" %}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="card shadow-lg">
+                <div class="card-body p-5">
+                    <i class="fas fa-check-circle fa-5x text-success mb-4"></i>
+                    <h1 class="display-4">{% trans "¡Pedido Recibido!" %}</h1>
+                    <p class="lead">{% blocktrans with pedido_id=pedido.id %}Gracias, <strong>{{ pedido.nombre_cliente }}</strong>. Hemos recibido tu pedido <strong>#{{ pedido_id }}</strong>.{% endblocktrans %}</p>
+
+                    <hr class="my-4">
+
+                    <p>{% trans "En breve comenzaremos a prepararlo. Te mantendremos informado sobre su estado." %}</p>
+                    {% if pedido.email_cliente %}
+                        <p>{% blocktrans with email=pedido.email_cliente %}Si proporcionaste un correo electrónico ({{ email }}), recibirás una confirmación allí también.{% endblocktrans %}</p>
+                    {% endif %}
+                    <p>{% blocktrans with telefono=pedido.telefono_cliente %}Nos pondremos en contacto contigo al número <strong>{{ telefono }}</strong> si es necesario.{% endblocktrans %}</p>
+
+                    <h4 class="mt-5 mb-3">{% trans "Resumen del Pedido" %}</h4>
+                    <ul class="list-group list-group-flush text-left mb-4">
+                        {% for item in pedido.items.all %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ item.cantidad }} x {{ item.producto.nombre }}
+                                <span>${{ item.get_cost|floatformat:2 }}</span>
+                            </li>
+                        {% endfor %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center active">
+                            <strong>{% trans "Total" %}</strong>
+                            <strong>${{ pedido.get_total_cost|floatformat:2 }}</strong>
+                        </li>
+                    </ul>
+
+                    {% if pedido.notas_adicionales_cliente %}
+                    <div class="alert alert-light text-left" role="alert">
+                        <strong>{% trans "Tus notas para este pedido:" %}</strong><br>
+                        {{ pedido.notas_adicionales_cliente|linebreaksbr }}
+                    </div>
+                    {% endif %}
+
+                    <p class="mt-4">
+                        <a href="{% url 'menu:menu_publico' %}" class="btn btn-primary btn-lg">{% trans "Volver al Menú" %}</a>
+                        {# Podrías tener una vista de "Mis Pedidos" si hay usuarios logueados #}
+                        {# <a href="{% url 'pedidos:user_order_history' %}" class="btn btn-outline-secondary btn-lg">Ver Historial de Pedidos</a> #}
+                    </p>
+                    <p class="text-muted small mt-3">
+                        {% trans "Si tienes alguna pregunta, no dudes en contactarnos." %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<style>
+    .fa-check-circle {
+        font-size: 6rem; /* Aumentar tamaño del ícono */
+    }
+    .display-4 {
+        font-weight: 300;
+    }
+</style>
+{% endblock %}

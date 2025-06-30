@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{% trans "Nuestro Menú" %} - {% trans "Cafetería Delicia" %}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="text-center mb-5">
+        <h1>{% trans "Nuestro Delicioso Menú" %}</h1>
+        <p class="lead">{% trans "Explora nuestra variedad de cafés, postres y más. Todo preparado con ingredientes frescos y mucho amor." %}</p>
+    </div>
+
+    {% if not categorias_con_productos %}
+        <div class="alert alert-info text-center" role="alert">
+            {% trans "Nuestro menú se está actualizando. ¡Vuelve pronto para ver nuestras delicias!" %}
+        </div>
+    {% else %}
+        {% for categoria in categorias_con_productos %}
+            {% if categoria.productos.all %} {# Solo mostrar categoría si tiene productos disponibles #}
+                <div class="mb-5">
+                    <h2 class="mb-3" id="categoria-{{ categoria.slug }}">{{ categoria.nombre }}</h2>
+                    <div class="row">
+                        {% for producto in categoria.productos.all %}
+                            <div class="col-lg-4 col-md-6 mb-4">
+                                <div class="card h-100 shadow-sm product-card">
+                                    {% if producto.imagen %}
+                                        <img src="{{ producto.imagen.url }}" class="card-img-top" alt="{{ producto.nombre }}" style="height: 200px; object-fit: cover;">
+                                    {% else %}
+                                        <img src="{% static 'images/default_product_menu.png' %}" class="card-img-top" alt="{% trans 'Imagen no disponible' %}" style="height: 200px; object-fit: cover; background-color: #f8f9fa;">
+                                    {% endif %}
+                                    <div class="card-body d-flex flex-column">
+                                        <h5 class="card-title">{{ producto.nombre }}</h5>
+                                        <p class="card-text text-muted small">{{ producto.descripcion|truncatewords:15 }}</p>
+                                        <div class="mt-auto">
+                                            <p class="card-text price mb-2"><strong>${{ producto.precio|floatformat:2 }}</strong></p>
+                                            {% if producto.disponible %}
+                                                <form action="{% url 'pedidos:cart_add' product_id=producto.id %}" method="post" class="form-inline">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="product_id" value="{{ producto.id }}">
+                                                    <div class="input-group input-group-sm">
+                                                        <input type="number" name="quantity" value="1" min="1" class="form-control" style="width: 60px;">
+                                                        <div class="input-group-append">
+                                                            <button type="submit" class="btn btn-sm btn-success">{% trans "Añadir" %}</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            {% else %}
+                                                <p class="text-danger small">{% trans "No disponible temporalmente" %}</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+</div>
+
+<style>
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15)!important;
+    transition: transform .2s ease-in-out, box-shadow .2s ease-in-out;
+}
+.price {
+    color: #28a745; /* Verde éxito de Bootstrap */
+    font-size: 1.25rem;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Pequeño script para manejar el submit de los formularios de añadir al carrito
+// Podría expandirse para dar feedback visual (ej. con AJAX)
+document.querySelectorAll('.form-inline').forEach(form => {
+    form.addEventListener('submit', function(e) {
+        // e.preventDefault(); // Descomentar si se va a manejar con AJAX
+        // Lógica para añadir al carrito y actualizar UI (ej. contador del carrito)
+        // console.log('Producto añadido (simulado)');
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% block page_title %}{% endblock %} - {% trans "Gestión del Menú" %} - {% trans "Cafetería Delicia" %}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-3">
+        <h4>{% trans "Navegación Menú" %}</h4>
+        <div class="list-group">
+            <a href="{% url 'menu:producto_list' %}" class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'producto_list' or request.resolver_match.url_name == 'producto_detail' %}active{% endif %}">
+                {% trans "Ver Productos" %}
+            </a>
+            <a href="{% url 'menu:producto_create' %}" class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'producto_create' %}active{% endif %}">
+                {% trans "Crear Producto" %}
+            </a>
+            <hr>
+            <a href="{% url 'menu:categoria_list' %}" class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'categoria_list' or request.resolver_match.url_name == 'categoria_detail' %}active{% endif %}">
+                {% trans "Ver Categorías" %}
+            </a>
+            <a href="{% url 'menu:categoria_create' %}" class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'categoria_create' %}active{% endif %}">
+                {% trans "Crear Categoría" %}
+            </a>
+             <hr>
+            <a href="{% url 'menu:menu_publico' %}" class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'menu_publico' %}active{% endif %}">
+                {% trans "Vista Menú Público" %}
+            </a>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <h2>{% block section_title %}{% endblock %}</h2>
+        {% block menu_content %}
+        {% endblock %}
+    </div>
+</div>
+{% endblock %}

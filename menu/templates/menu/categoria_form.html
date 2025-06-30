@@ -1,0 +1,45 @@
+{% extends "menu/menu_base.html" %}
+{% load i18n %}
+{% load crispy_forms_tags %} {# Si decides usar django-crispy-forms #}
+
+{% block page_title %}{{ titulo_pagina }}{% endblock %}
+{% block section_title %}{{ titulo_pagina }}{% endblock %}
+
+{% block menu_content %}
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+
+            {# {{ form|crispy }} #}
+
+            {% for field in form %}
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.help_text %}
+                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">{{ nombre_boton }}</button>
+                <a href="{% url 'menu:categoria_list' %}" class="btn btn-secondary">{% trans "Cancelar" %}</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if object and object.pk %}
+<div class="mt-4">
+    <a href="{% url 'menu:categoria_delete' pk=object.pk %}" class="btn btn-danger btn-sm">{% trans "Eliminar esta categoría" %}</a>
+</div>
+{% endif %}
+
+{% endblock %}

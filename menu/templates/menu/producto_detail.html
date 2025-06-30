@@ -1,0 +1,54 @@
+{% extends "menu/menu_base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block page_title %}{{ producto.nombre }}{% endblock %}
+{% block section_title %}{{ producto.nombre }}{% endblock %}
+
+{% block menu_content %}
+<div class="card">
+    <div class="row no-gutters">
+        <div class="col-md-4">
+            {% if producto.imagen %}
+                <img src="{{ producto.imagen.url }}" class="card-img" alt="{{ producto.nombre }}" style="max-height: 300px; object-fit: cover;">
+            {% else %}
+                <img src="{% static 'images/default_product_large.png' %}" class="card-img" alt="{% trans 'Imagen no disponible' %}" style="max-height: 300px; object-fit: cover;">
+            {% endif %}
+        </div>
+        <div class="col-md-8">
+            <div class="card-body">
+                <h5 class="card-title">{{ producto.nombre }}</h5>
+                <p class="card-text"><strong>{% trans "Categoría" %}:</strong> {{ producto.categoria.nombre|default:"Sin categoría" }}</p>
+                <p class="card-text"><strong>{% trans "Precio" %}:</strong> ${{ producto.precio|floatformat:2 }}</p>
+                <p class="card-text"><strong>{% trans "Descripción" %}:</strong></p>
+                <p>{{ producto.descripcion|linebreaksbr|default:"No hay descripción disponible." }}</p>
+                <p class="card-text">
+                    <strong>{% trans "Disponible" %}:</strong>
+                    {% if producto.disponible %}
+                        <span class="badge badge-success">{% trans "Sí" %}</span>
+                    {% else %}
+                        <span class="badge badge-danger">{% trans "No" %}</span>
+                    {% endif %}
+                </p>
+                <p class="card-text"><small class="text-muted">{% trans "Última actualización" %}: {{ producto.actualizado|date:"d M Y, H:i" }}</small></p>
+
+                <div class="mt-3">
+                    <a href="{% url 'menu:producto_update' pk=producto.pk %}" class="btn btn-info">{% trans "Editar Producto" %}</a>
+                    <a href="{% url 'menu:producto_delete' pk=producto.pk %}" class="btn btn-danger">{% trans "Eliminar Producto" %}</a>
+                    <a href="{% url 'menu:producto_list' %}" class="btn btn-secondary">{% trans "Volver al Listado" %}</a>
+                </div>
+
+                {% comment %} Botón para añadir al carrito (se activará cuando el carrito esté listo) {% endcomment %}
+                {% if producto.disponible %}
+                <form action="{% url 'pedidos:cart_add' product_id=producto.id %}" method="post" class="mt-3">
+                    {% csrf_token %}
+                    <input type="hidden" name="quantity" value="1"> {# O un campo para seleccionar cantidad #}
+                    <button type="submit" class="btn btn-success">{% trans "Añadir al Carrito" %}</button>
+                </form>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

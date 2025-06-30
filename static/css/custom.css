@@ -1,0 +1,102 @@
+/* static/css/custom.css */
+
+body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f4f4f4; /* Un fondo global muy sutil */
+}
+
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-weight: bold;
+    color: #5a3e36 !important; /* Un color café para la marca */
+}
+
+.footer {
+    padding: 1.5rem 0;
+    background-color: #343a40 !important; /* Footer oscuro */
+    color: #f8f9fa;
+}
+
+.footer a {
+    color: #f8f9fa;
+}
+
+.footer a:hover {
+    color: #adb5bd;
+}
+
+/* Estilos para tarjetas de producto para consistencia */
+.product-card, .product-card-inicio {
+    border: 1px solid #ddd;
+    border-radius: .25rem;
+    overflow: hidden; /* Para que la imagen no se salga del borde redondeado */
+}
+
+.product-card .card-body .price, .product-card-inicio .card-body .price {
+    color: #28a745; /* Verde para el precio */
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.btn-primary {
+    background-color: #6f4e37; /* Tono café para botones primarios */
+    border-color: #6f4e37;
+}
+.btn-primary:hover {
+    background-color: #5a3e36;
+    border-color: #5a3e36;
+}
+
+.btn-success {
+    background-color: #28a745; /* Verde estándar para éxito */
+    border-color: #28a745;
+}
+
+.section-title {
+    color: #4a3b32; /* Tono café más oscuro para títulos de sección */
+}
+
+/* Mejoras para la tabla de carrito */
+.table th {
+    font-weight: 600; /* Hacer los encabezados de tabla un poco más pesados */
+}
+
+/* Estilo para los mensajes de Django */
+.alert {
+    border-left-width: 5px;
+}
+.alert-success {
+    border-left-color: #28a745;
+}
+.alert-info {
+    border-left-color: #17a2b8;
+}
+.alert-warning {
+    border-left-color: #ffc107;
+}
+.alert-danger {
+    border-left-color: #dc3545;
+}
+
+/* Ajustes para la página de inicio */
+.hero-section h1 {
+    color: white; /* Asegurar que el texto sea blanco si la imagen de fondo es oscura */
+}
+.hero-section p.lead {
+     color: #f8f9fa; /* Un blanco un poco menos intenso para el lead */
+}
+
+/* Para la lista de pedidos del staff, resaltar un poco más las filas */
+.table-hover tbody tr:hover {
+    background-color: #e9ecef;
+}
+
+/* Consistencia en los títulos de las tarjetas */
+.card-header h4, .card-header h5 {
+    margin-bottom: 0; /* Bootstrap a veces añade margen, lo quitamos para consistencia */
+}

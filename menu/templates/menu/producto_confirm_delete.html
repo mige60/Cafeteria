@@ -1,0 +1,20 @@
+{% extends "menu/menu_base.html" %}
+{% load i18n %}
+
+{% block page_title %}{{ titulo_pagina }}{% endblock %}
+{% block section_title %}{{ titulo_pagina }}: {{ producto.nombre }}{% endblock %}
+
+{% block menu_content %}
+<div class="alert alert-danger" role="alert">
+    <h4 class="alert-heading">{% trans "¡Atención!" %}</h4>
+    <p>{% blocktrans with producto_nombre=producto.nombre %}Estás a punto de eliminar permanentemente el producto <strong>"{{ producto_nombre }}"</strong>.{% endblocktrans %}</p>
+    <hr>
+    <p class="mb-0">{% trans "¿Estás seguro de que deseas continuar? Esta acción no se puede deshacer." %}</p>
+</div>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">{% trans "Sí, eliminar producto" %}</button>
+    <a href="{% if producto.pk %}{% url 'menu:producto_detail' pk=producto.pk slug=producto.slug %}{% else %}{% url 'menu:producto_list' %}{% endif %}" class="btn btn-secondary">{% trans "Cancelar" %}</a>
+</form>
+{% endblock %}

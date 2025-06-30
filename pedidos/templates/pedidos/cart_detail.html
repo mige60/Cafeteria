@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{{ titulo_pagina }} - {% trans "Cafetería Delicia" %}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">{{ titulo_pagina }}</h1>
+
+    {% if not cart %}
+        <div class="alert alert-info" role="alert">
+            <h4 class="alert-heading">{% trans "¡Tu carrito está vacío!" %}</h4>
+            <p>{% trans "Parece que todavía no has añadido ninguna delicia a tu carrito." %}</p>
+            <hr>
+            <p class="mb-0">{% trans "Explora nuestro" %} <a href="{% url 'menu:menu_publico' %}" class="alert-link">{% trans "menú" %}</a> {% trans "y encuentra algo que te guste." %}</p>
+        </div>
+    {% else %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="thead-light">
+                    <tr>
+                        <th scope="col" style="width: 15%;">{% trans "Imagen" %}</th>
+                        <th scope="col" style="width: 30%;">{% trans "Producto" %}</th>
+                        <th scope="col" class="text-center" style="width: 15%;">{% trans "Precio Unitario" %}</th>
+                        <th scope="col" class="text-center" style="width: 20%;">{% trans "Cantidad" %}</th>
+                        <th scope="col" class="text-right" style="width: 10%;">{% trans "Subtotal" %}</th>
+                        <th scope="col" class="text-center" style="width: 10%;">{% trans "Quitar" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart %} {# Asumiendo que cart.__iter__ devuelve items con product_obj #}
+                        <tr>
+                            <td>
+                                {% if item.product_obj.imagen %}
+                                    <img src="{{ item.product_obj.imagen.url }}" alt="{{ item.product_obj.nombre }}" class="img-fluid rounded" style="max-height: 75px;">
+                                {% else %}
+                                    <img src="{% static 'images/default_product.png' %}" alt="{% trans 'Sin imagen' %}" class="img-fluid rounded" style="max-height: 75px;">
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ item.product_obj.get_absolute_url }}">{{ item.product_obj.nombre }}</a>
+                                <small class="d-block text-muted">{{ item.product_obj.categoria.nombre|default:"" }}</small>
+                            </td>
+                            <td class="text-center">${{ item.price|floatformat:2 }}</td>
+                            <td class="text-center">
+                                <form action="{% url 'pedidos:cart_add' product_id=item.product_obj.id %}" method="post" class="form-inline justify-content-center">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="next" value="{{ request.path }}">
+                                    <input type="hidden" name="update" value="true">
+                                    <div class="input-group input-group-sm" style="width: 120px;">
+                                        <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="form-control text-center">
+                                        <div class="input-group-append">
+                                            <button type="submit" class="btn btn-outline-secondary btn-sm">{% trans "Actualizar" %}</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </td>
+                            <td class="text-right">${{ item.total_price|floatformat:2 }}</td>
+                            <td class="text-center">
+                                <form action="{% url 'pedidos:cart_remove' product_id=item.product_obj.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm">&times;</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr class="table-light">
+                        <td colspan="4" class="text-right"><strong>{% trans "Total del Carrito" %}:</strong></td>
+                        <td class="text-right"><strong>${{ cart.get_total_price|floatformat:2 }}</strong></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <a href="{% url 'menu:menu_publico' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> {% trans "Seguir Comprando" %}
+            </a>
+            {% if cart %}
+            <a href="{% url 'pedidos:pedido_create' %}" class="btn btn-success btn-lg">
+                {% trans "Proceder al Pago" %} <i class="fas fa-arrow-right"></i>
+            </a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<style>
+    .align-middle td, .align-middle th {
+        vertical-align: middle !important;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "menu/menu_base.html" %}
+{% load i18n %}
+
+{% block page_title %}{{ titulo_pagina }}{% endblock %}
+{% block section_title %}{{ titulo_pagina }}: {{ categoria.nombre }}{% endblock %}
+
+{% block menu_content %}
+
+{% if error_message %}
+    <div class="alert alert-warning" role="alert">
+        <h4 class="alert-heading">{% trans "Error al intentar eliminar" %}</h4>
+        <p>{% blocktrans with categoria_nombre=categoria.nombre %}No se puede eliminar la categoría <strong>"{{ categoria_nombre }}"</strong> porque tiene productos asociados.{% endblocktrans %}</p>
+        <hr>
+        <p class="mb-0">{% trans "Por favor, reasigna o elimina los productos de esta categoría antes de intentar eliminarla nuevamente." %}</p>
+    </div>
+    <a href="{% url 'menu:categoria_list' %}" class="btn btn-secondary mt-3">{% trans "Volver al listado de categorías" %}</a>
+{% else %}
+    <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">{% trans "¡Atención!" %}</h4>
+        <p>{% blocktrans with categoria_nombre=categoria.nombre %}Estás a punto de eliminar permanentemente la categoría <strong>"{{ categoria_nombre }}"</strong>.{% endblocktrans %}</p>
+        {% if categoria.productos.count > 0 %}
+        <p><strong>{% blocktrans count counter=categoria.productos.count %}Esta categoría tiene {{ counter }} producto asociado.{% plural %}Esta categoría tiene {{ counter }} productos asociados.{% endblocktrans %}</strong> {% trans "Si eliminas la categoría, estos productos podrían quedar sin categoría o ser eliminados dependiendo de la configuración del modelo (actualmente se asignarán a NULL)." %}</p>
+        {% endif %}
+        <hr>
+        <p class="mb-0">{% trans "¿Estás seguro de que deseas continuar? Esta acción no se puede deshacer." %}</p>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">{% trans "Sí, eliminar categoría" %}</button>
+        <a href="{% url 'menu:categoria_detail' pk=categoria.pk slug=categoria.slug %}" class="btn btn-secondary">{% trans "Cancelar" %}</a>
+    </form>
+{% endif %}
+{% endblock %}

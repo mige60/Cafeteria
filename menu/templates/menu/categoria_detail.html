@@ -1,0 +1,58 @@
+{% extends "menu/menu_base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block page_title %}{% trans "Categoría" %}: {{ categoria.nombre }}{% endblock %}
+{% block section_title %}{% trans "Categoría" %}: {{ categoria.nombre }}{% endblock %}
+
+{% block menu_content %}
+<div class="mb-3">
+    <p><strong>{% trans "Slug" %}:</strong> {{ categoria.slug }}</p>
+    <a href="{% url 'menu:categoria_update' pk=categoria.pk %}" class="btn btn-info btn-sm">{% trans "Editar Categoría" %}</a>
+    <a href="{% url 'menu:categoria_delete' pk=categoria.pk %}" class="btn btn-danger btn-sm">{% trans "Eliminar Categoría" %}</a>
+    <a href="{% url 'menu:categoria_list' %}" class="btn btn-secondary btn-sm">{% trans "Volver al listado de categorías" %}</a>
+</div>
+
+<hr>
+
+<h4>{% trans "Productos en esta categoría" %}:</h4>
+{% if productos %}
+    <div class="row">
+        {% for producto in productos %}
+            <div class="col-md-4 mb-3">
+                <div class="card h-100">
+                    {% if producto.imagen %}
+                        <img src="{{ producto.imagen.url }}" class="card-img-top" alt="{{ producto.nombre }}" style="height: 150px; object-fit: cover;">
+                    {% else %}
+                        <img src="{% static 'images/default_product.png' %}" class="card-img-top" alt="{% trans 'Sin imagen' %}" style="height: 150px; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title"><a href="{{ producto.get_absolute_url }}">{{ producto.nombre }}</a></h5>
+                        <p class="card-text">${{ producto.precio|floatformat:2 }}</p>
+                        <p class="card-text">
+                            {% if producto.disponible %}
+                                <span class="badge badge-success">{% trans "Disponible" %}</span>
+                            {% else %}
+                                <span class="badge badge-danger">{% trans "No Disponible" %}</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="card-footer">
+                         <a href="{{ producto.get_absolute_url }}" class="btn btn-sm btn-outline-primary">{% trans "Ver Detalle" %}</a>
+                         {% if producto.disponible %}
+                            <form action="{% url 'pedidos:cart_add' product_id=producto.id %}" method="post" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="btn btn-sm btn-success">{% trans "Añadir" %}</button>
+                            </form>
+                         {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p>{% trans "No hay productos disponibles en esta categoría." %}</p>
+{% endif %}
+
+{% endblock %}

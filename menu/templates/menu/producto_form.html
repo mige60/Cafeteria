@@ -1,0 +1,75 @@
+{% extends "menu/menu_base.html" %}
+{% load i18n %}
+{% load crispy_forms_tags %} {# Si decides usar django-crispy-forms más adelante #}
+
+{% block page_title %}{{ titulo_pagina }}{% endblock %}
+{% block section_title %}{{ titulo_pagina }}{% endblock %}
+
+{% block menu_content %}
+<div class="card">
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            {# Si no usas crispy-forms, puedes renderizar el formulario campo por campo o con {{ form.as_p }} #}
+            {# {{ form|crispy }} #}
+
+            {% for field in form %}
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    {% if field.name == 'imagen' and form.instance.imagen %}
+                        <div class="mb-2">
+                            <img src="{{ form.instance.imagen.url }}" alt="{{ form.instance.nombre }}" style="max-height: 150px; border-radius: 5px;">
+                            <br><small>{% trans "Imagen actual. Marque 'Limpiar' para eliminarla." %}</small>
+                        </div>
+                    {% endif %}
+                    {{ field }}
+                    {% if field.help_text %}
+                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">{{ nombre_boton }}</button>
+                <a href="{% if object %}{{ object.get_absolute_url }}{% else %}{% url 'menu:producto_list' %}{% endif %}" class="btn btn-secondary">{% trans "Cancelar" %}</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if object and object.pk %}
+<div class="mt-4">
+    <a href="{% url 'menu:producto_delete' pk=object.pk %}" class="btn btn-danger btn-sm">{% trans "Eliminar este producto" %}</a>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+{# Script para previsualizar imagen si se desea #}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const imageInput = document.querySelector('input[type="file"][name="imagen"]');
+    if (imageInput) {
+        imageInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                // Podrías añadir un elemento <img> para previsualizar la nueva imagen
+                // reader.onload = function(e) {
+                //     let preview = document.getElementById('imagePreview'); // Necesitarías añadir <img id="imagePreview">
+                //     if(preview) preview.src = e.target.result;
+                // }
+                // reader.readAsDataURL(file);
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
