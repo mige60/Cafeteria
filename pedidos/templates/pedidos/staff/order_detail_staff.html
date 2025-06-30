@@ -35,10 +35,10 @@
                         <dd class="col-sm-8">{{ pedido.telefono_cliente }}</dd>
 
                         <dt class="col-sm-4">{% trans "Fecha Creación" %}:</dt>
-                        <dd class="col-sm-8">{{ pedido.fecha_creacion|timezone:settings.TIME_ZONE|date:"d M Y, H:i:s" }}</dd>
+                        <dd class="col-sm-8">{{ pedido.fecha_creacion|timezone:TIME_ZONE|date:"d M Y, H:i:s" }}</dd>
 
                         <dt class="col-sm-4">{% trans "Última Actualización" %}:</dt>
-                        <dd class="col-sm-8">{{ pedido.fecha_actualizacion|timezone:settings.TIME_ZONE|date:"d M Y, H:i:s" }}</dd>
+                        <dd class="col-sm-8">{{ pedido.fecha_actualizacion|timezone:TIME_ZONE|date:"d M Y, H:i:s" }}</dd>
 
                         <dt class="col-sm-4">{% trans "Total del Pedido" %}:</dt>
                         <dd class="col-sm-8"><strong>${{ pedido.get_total_cost|floatformat:2 }}</strong></dd>

@@ -3,6 +3,10 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
+
+# ¡Añade esta línea para importar el módulo 'models' de Django!
+from django.db import models 
+
 from .models import Producto, Categoria
 from .forms import ProductoForm, CategoriaForm
 from django.utils.translation import gettext_lazy as _ # Para traducciones
@@ -160,11 +164,8 @@ class CategoriaDeleteView(DeleteView):
         if self.object.productos.exists():
             messages.error(self.request, _(f"No se puede eliminar la categoría '{self.object.nombre}' porque tiene productos asociados. Por favor, reasigna o elimina esos productos primero."))
             # No se llama a super().form_valid(form) para evitar la eliminación
-            # Es necesario redirigir o renderizar de nuevo el template de confirmación
-            # Para simplificar, vamos a redirigir a la lista de categorías.
-            # Si quisieras mostrar el error en la misma página de confirmación,
-            # tendrías que sobreescribir el método post o delete.
-            return render(self.request, self.template_name, self.get_context_data(form=form, error_message=True))
+            # Renderizar de nuevo el template de confirmación para mostrar el mensaje de error
+            return render(self.request, self.template_name, self.get_context_data(form=form)) # Quité 'error_message=True' ya que el mensaje ya está en messages
 
         messages.success(self.request, _(f"Categoría '{self.object.nombre}' eliminada exitosamente."))
         return super().form_valid(form)

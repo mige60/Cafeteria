@@ -48,7 +48,7 @@
                         <td>#{{ pedido.id }}</td>
                         <td>{{ pedido.nombre_cliente }}</td>
                         <td>{{ pedido.telefono_cliente }}</td>
-                        <td>{{ pedido.fecha_creacion|timezone:settings.TIME_ZONE|date:"d M Y, H:i" }}</td>
+                        <td>{{ pedido.fecha_creacion|timezone:TIME_ZONE|date:"d M Y, H:i" }}</td>
                         <td>
                             <span class="badge badge-{% if pedido.estado == 'pendiente' %}warning{% elif pedido.estado == 'en_proceso' %}info{% elif pedido.estado == 'listo_recoger'%}primary{% elif pedido.estado == 'en_reparto'%}primary{% elif pedido.estado == 'completado' %}success{% elif pedido.estado == 'cancelado' %}danger{% else %}secondary{% endif %}">
                                 {{ pedido.get_estado_display }}

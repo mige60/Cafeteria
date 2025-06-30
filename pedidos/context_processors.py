@@ -1,6 +1,14 @@
-from .cart import Cart
+# C:\Users\PC1\Cafeteria\cafeteria_project\context_processors.py
 
-def cart_total_amount(request):
-    cart = Cart(request)
-    total = sum(item['price'] * item['quantity'] for item in cart)
-    return {'cart_total_amount': total, 'cart_items_count': len(cart)}
+from django.conf import settings
+
+def custom_settings(request):
+    """
+    Expone configuraciones específicas de Django a los templates.
+    """
+    return {
+        'TIME_ZONE': settings.TIME_ZONE,
+        # Puedes añadir más configuraciones de settings.py aquí si las necesitas en tus plantillas.
+        # Por ejemplo: 'DEBUG': settings.DEBUG,
+        # 'MEDIA_URL': settings.MEDIA_URL,
+    }

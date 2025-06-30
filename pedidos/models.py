@@ -88,5 +88,10 @@ class DetallePedido(models.Model):
         return f"{self.cantidad} x {self.producto.nombre}"
 
     def get_cost(self):
-        cost = self.precio_unitario * self.cantidad
-        return cost if cost is not None else Decimal('0.00')
+
+        # Asegúrate de que precio_unitario y cantidad no sean None.
+        # Si son None, los tratamos como 0 para el cálculo.
+        precio = self.precio_unitario if self.precio_unitario is not None else 0
+        cantidad = self.cantidad if self.cantidad is not None else 0
+
+        return precio * cantidad # Aquí se realiza la multiplicación segura

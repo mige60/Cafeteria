@@ -32,15 +32,16 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
-    # Mis aplicaciones
-    "menu.apps.MenuConfig",
-    "pedidos.apps.PedidosConfig",
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'crispy_forms',  # Añade esta línea
+    'crispy_bootstrap5', # Añade esta línea si usas Bootstrap 5
+    'menu.apps.MenuConfig',
+    'pedidos.apps.PedidosConfig',
 ]
 
 MIDDLEWARE = [
@@ -56,23 +57,28 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "cafeteria_project.urls"
 
+# cafeteria_project/settings.py
+
+# C:\Users\PC1\Cafeteria\cafeteria_project\settings.py
+
 TEMPLATES = [
     {
-        "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, 'templates')], # Directorio de plantillas global
-        "APP_DIRS": True,
-        "OPTIONS": {
-            "context_processors": [
-                "django.template.context_processors.debug",
-                "django.template.context_processors.request",
-                "django.contrib.auth.context_processors.auth",
-                "django.contrib.messages.context_processors.messages",
-                "pedidos.context_processors.cart_total_amount", # Para el total del carrito global
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [BASE_DIR / 'templates'],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+                # 'django.template.context_processors.settings', # ¡Mantén esta línea comentada!
+                'pedidos.context_processors.custom_settings',
+
             ],
         },
     },
 ]
-
 WSGI_APPLICATION = "cafeteria_project.wsgi.application"
 
 
@@ -140,3 +146,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Configuraciones del Carrito
 CART_SESSION_ID = 'cart'
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
